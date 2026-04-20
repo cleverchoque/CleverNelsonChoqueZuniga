@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EST334 - Estadística Espacial | UNAP</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --verde: #16a34a;
+      --verde-l: #dcfce7;
+      --verde-d: #15803d;
+      --azul: #1e3a5f;
+      --texto: #1a2e25;
+      --gris: #f8fafc;
+      --gris-2: #f1f5f9;
+      --gris-3: #e2e8f0;
+      --sub: #64748b;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',sans-serif; background:#fff; color:var(--texto); }
+
+    /* NAV */
+    .nav {
+      background:#fff; border-bottom:1px solid var(--gris-3);
+      position:sticky; top:0; z-index:100;
+    }
+    .nav-inner {
+      max-width:1100px; margin:0 auto; padding:0 2rem;
+      height:60px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .nav-logo {
+      font-family:'Syne',sans-serif; font-weight:800; font-size:1.2rem;
+      color:var(--verde); text-decoration:none;
+      display:flex; align-items:center; gap:.6rem;
+      letter-spacing:-.01em;
+    }
+    .nav-logo .logo-badge {
+      background:var(--verde); color:#fff;
+      font-size:.95rem; font-weight:800;
+      padding:.3rem .8rem; border-radius:5px;
+      letter-spacing:.02em;
+    }
+    .nav-logo span { color:var(--texto); font-weight:600; font-size:1.1rem; }
+    .nav-links { display:flex; gap:.2rem; list-style:none; }
+    .nav-links a {
+      font-size:.83rem; font-weight:500; color:var(--sub);
+      text-decoration:none; padding:.4rem .9rem; border-radius:6px;
+      transition:all .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { background:var(--verde-l); color:var(--verde-d); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--azul) 0%, #1a4a6e 60%, #0f3352 100%);
+      padding:5rem 2rem 4rem;
+      position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:'';
+      position:absolute; inset:0;
+      background:radial-gradient(ellipse 80% 60% at 10% 60%, rgba(22,163,74,.15) 0%, transparent 60%);
+    }
+    .hero::after {
+      content:'334';
+      position:absolute; right:-1rem; bottom:-3rem;
+      font-family:'Syne',sans-serif; font-size:16rem; font-weight:800;
+      color:rgba(255,255,255,.03); pointer-events:none; user-select:none;
+    }
+    .hero-inner { max-width:1100px; margin:0 auto; position:relative; z-index:1; }
+    .hero-tag {
+      display:inline-block;
+      background:rgba(22,163,74,.2); border:1px solid rgba(22,163,74,.4);
+      color:#86efac; font-size:.72rem; font-weight:600;
+      letter-spacing:.1em; text-transform:uppercase;
+      padding:.3rem .9rem; border-radius:20px; margin-bottom:1.5rem;
+    }
+    .hero-title {
+      font-family:'Syne',sans-serif;
+      font-size:clamp(2.5rem,5vw,4rem); font-weight:800;
+      color:#fff; line-height:1.08; letter-spacing:-.02em;
+      margin-bottom:1rem;
+    }
+    .hero-title em { color:#86efac; font-style:normal; }
+
+    .hero-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:3rem;
+      margin-top:2.5rem; align-items:start;
+    }
+
+    .hero-desc { font-size:.95rem; color:rgba(255,255,255,.55); line-height:1.8; }
+
+    /* info card */
+    .info-card {
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:12px; padding:1.8rem;
+    }
+    .ic-label {
+      font-size:.65rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+      color:#86efac; margin-bottom:1.2rem;
+    }
+    .ic-row {
+      display:flex; justify-content:space-between;
+      padding:.55rem 0; border-bottom:1px solid rgba(255,255,255,.07);
+      font-size:.85rem;
+    }
+    .ic-row:last-child { border:none; }
+    .ic-k { color:rgba(255,255,255,.38); }
+    .ic-v { color:#fff; font-weight:600; }
+
+    /* SECCIONES */
+    .section { padding:5rem 2rem; position:relative; overflow:hidden; }
+    .container { max-width:1100px; margin:0 auto; position:relative; z-index:1; }
+    .bg-alt { background:var(--gris); }
+
+    /* Orbes animados en secciones blancas */
+    .section .orb {
+      position:absolute; border-radius:50%;
+      filter:blur(80px); pointer-events:none; z-index:0;
+      animation:float 8s ease-in-out infinite;
+    }
+    .orb-1 { width:350px; height:350px; background:rgba(22,163,74,.06); top:-80px; left:-80px; animation-delay:0s; }
+    .orb-2 { width:250px; height:250px; background:rgba(30,58,95,.05); bottom:-60px; right:-60px; animation-delay:-3s; }
+    .orb-3 { width:180px; height:180px; background:rgba(22,163,74,.05); top:50%; left:60%; animation-delay:-5s; }
+
+    @keyframes float {
+      0%,100% { transform:translate(0,0) scale(1); }
+      33%      { transform:translate(20px,-20px) scale(1.05); }
+      66%      { transform:translate(-15px,15px) scale(.95); }
+    }
+
+    /* Grid de puntos en fondo blanco */
+    .section::before {
+      content:'';
+      position:absolute; inset:0; z-index:0;
+      background-image: radial-gradient(circle, rgba(22,163,74,.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events:none;
+    }
+    .bg-alt::before {
+      background-image: radial-gradient(circle, rgba(30,58,95,.07) 1px, transparent 1px);
+    }
+
+    .sec-tag {
+      font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--verde); display:flex; align-items:center; gap:.5rem; margin-bottom:.7rem;
+    }
+    .sec-tag::before { content:''; width:18px; height:2px; background:var(--verde); border-radius:1px; }
+    .sec-title {
+      font-family:'Syne',sans-serif; font-size:clamp(1.6rem,3vw,2.2rem);
+      font-weight:800; color:var(--texto); margin-bottom:.5rem; letter-spacing:-.02em;
+    }
+    .sec-desc { font-size:.92rem; color:var(--sub); line-height:1.8; max-width:560px; }
+
+    /* UNIDADES CARDS */
+    .units-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2.5rem;
+    }
+    .unit-card {
+      background:#fff; border:1px solid var(--gris-3); border-radius:12px;
+      padding:2rem; text-decoration:none; color:var(--texto);
+      display:flex; flex-direction:column;
+      transition:all .25s; position:relative; overflow:hidden;
+    }
+    .unit-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      background:linear-gradient(90deg,var(--verde),#22c55e);
+      opacity:0; transition:opacity .25s;
+    }
+    .unit-card:hover { border-color:var(--verde); transform:translateY(-3px); box-shadow:0 12px 32px rgba(22,163,74,.1); }
+    .unit-card:hover::before { opacity:1; }
+    .unit-card.dim { opacity:.6; }
+
+    .uc-num {
+      font-family:'Syne',sans-serif; font-size:3.5rem; font-weight:800;
+      color:var(--gris-3); line-height:1; margin-bottom:1rem;
+    }
+    .uc-title {
+      font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700;
+      color:var(--texto); margin-bottom:.4rem;
+    }
+    .uc-desc { font-size:.83rem; color:var(--sub); line-height:1.65; flex:1; margin-bottom:1.2rem; }
+    .uc-badge {
+      display:inline-block; font-size:.65rem; font-weight:700;
+      letter-spacing:.08em; text-transform:uppercase; padding:.25rem .65rem; border-radius:20px;
+    }
+    .badge-green { background:var(--verde-l); color:var(--verde-d); }
+    .badge-gray  { background:var(--gris-2); color:var(--sub); }
+
+    .uc-arrow {
+      position:absolute; bottom:1.5rem; right:1.5rem;
+      font-size:1.2rem; color:var(--gris-3);
+      transition:color .25s, transform .25s;
+    }
+    .unit-card:hover .uc-arrow { color:var(--verde); transform:translateX(4px); }
+
+    /* CONTACTO */
+    .contacto {
+      background:var(--azul); padding:5rem 2rem; text-align:center;
+    }
+    .contacto h2 {
+      font-family:'Syne',sans-serif; font-size:2rem; font-weight:800;
+      color:#fff; margin-bottom:.5rem;
+    }
+    .contacto p { color:rgba(255,255,255,.45); font-size:.9rem; margin-bottom:2rem; }
+    .contact-links { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+    .clink {
+      color:rgba(255,255,255,.65); text-decoration:none; font-size:.85rem; font-weight:500;
+      padding:.55rem 1.4rem; border:1px solid rgba(255,255,255,.15); border-radius:7px;
+      transition:all .2s;
+    }
+    .clink:hover { background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.4); }
+
+    /* FOOTER */
+    footer {
+      background:#0f1f14; color:rgba(255,255,255,.2);
+      padding:1.2rem 2rem; text-align:center;
+      font-size:.72rem; letter-spacing:.04em;
+    }
+
+    /* LOGOS EN HERO */
+    .hero-logos {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 2rem;
+    }
+    .hero-logo-box {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    }
+    .hero-logo-box img {
+      width: 80px; height: 80px; object-fit: contain;
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      padding: 6px;
+      border: 1px solid rgba(255,255,255,.12);
+      transition: transform .3s;
+    }
+    .hero-logo-box img:hover { transform: scale(1.08); }
+    .hero-logo-label {
+      font-size: .65rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: rgba(255,255,255,.45);
+    }
+    .hero-center { flex: 1; text-align: center; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    .hero-tag    { animation:fadeUp .5s .1s both; }
+    .hero-title  { animation:fadeUp .6s .2s both; }
+    .hero-grid   { animation:fadeUp .6s .3s both; }
+
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s, transform .6s; }
+    .reveal.up { opacity:1; transform:translateY(0); }
+
+    @media(max-width:768px){
+      .hero-grid { grid-template-columns:1fr; }
+      .units-grid { grid-template-columns:1fr; }
+      .nav-links { display:none; }
+      .hero-logos { flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-badge">EST334</span>
+      <span>Portaflio Estadística Espacial</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Inicio</a></li>
+      <li><a href="index_unid1.html">Unidad I</a></li>
+      <li><a href="index_unid2.html">Unidad II</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="particles-canvas" style="position:absolute;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;"></canvas>
+  <div class="hero-inner">
+
+    <!-- LOGOS + TÍTULO -->
+    <div class="hero-logos">
+      <div class="hero-logo-box">
+        <img src="Logo_UNAP.png" alt="Logo UNAP">
+        <span class="hero-logo-label">UNAP</span>
+      </div>
+      <div class="hero-center">
+        <div class="hero-tag">Portafolio Académico · 2026-I</div>
+        <h1 class="hero-title">
+          Estadística <em>Espacial</em><br>EST334
+        </h1>
+      </div>
+      <div class="hero-logo-box">
+        <img src="Estadistica Informatica.png" alt="Logo FINESI">
+        <span class="hero-logo-label">FINESI</span>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-desc">
+        Portafolio del curso de Estadística Espacial correspondiente al semestre 2026-I.
+         Universidad Nacional del Altiplano Puno — Facultad De Ingenieria Estadisica E Informatica.
+      </div>
+      <div class="info-card">
+        <div class="ic-label">// información del estudiante</div>
+        <div class="ic-row"><span class="ic-k">Estudiante</span><span class="ic-v">Clever Nelson Choque Zuñiga</span></div>
+        <div class="ic-row"><span class="ic-k">Código</span><span class="ic-v">213854</span></div>
+        <div class="ic-row"><span class="ic-k">Curso</span><span class="ic-v">EST334</span></div>
+        <div class="ic-row"><span class="ic-k">Grupo</span><span class="ic-v">Grupo B</span></div>
+        <div class="ic-row"><span class="ic-k">Semestre</span><span class="ic-v">2026-I</span></div>
+        <div class="ic-row"><span class="ic-k">Docente</span><span class="ic-v">Ing. Fred Torres Cruz</span></div>
+        <div class="ic-row"><span class="ic-k">Carrera</span><span class="ic-v">Ing. Estadística e Informática</span></div>
+        <div class="ic-row"><span class="ic-k">Universidad</span><span class="ic-v">UNAP · Puno</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UNIDADES -->
+<section class="section" id="unidades">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-tag">Contenido del curso</div>
+      <h2 class="sec-title">Unidades del Curso</h2>
+      <p class="sec-desc">Selecciona una unidad para ver los trabajos y tareas desarrolladas durante el semestre 2026-I.</p>
+    </div>
+    <div class="units-grid reveal">
+
+      <a href="index_unid1.html" class="unit-card">
+        <div class="uc-num">UNIDAD I</div>
+        <div class="uc-title">Análisis Espacial y Métodos Geoestadísticos</div>
+        <div class="uc-desc">Ubicación espacial de variables de la Encuesta Nacional Agraria. Análisis de servicios financieros agropecuarios con datos georreferenciados a nivel nacional.</div>
+        <span class="uc-badge badge-green">1 trabajo completado</span>
+        <span class="uc-arrow">→</span>
+      </a>
+
+      <a href="index_unid2.html" class="unit-card dim">
+        <div class="uc-num">UNIDAD II</div>
+        <div class="uc-title">Modelos Geoestadísticos Avanzados</div>
+        <div class="uc-desc">Kriging, simulación estocástica e interpolación espacial aplicados a datos agropecuarios del Perú.</div>
+        <span class="uc-badge badge-gray">Próximamente</span>
+        <span class="uc-arrow">→</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contacto" id="contacto">
+  <h2>Contacto</h2>
+  <p>Clever Nelson Choque Zuñiga · Código 213854 · FINESI · UNAP Puno</p>
+  <div class="contact-links">
+    <a href="https://github.com/cleverchoque" class="clink">🐙 https://github.com/cleverchoque/CleverNelsonChoqueZuniga.git</a>
+    <a href="mailto:213854@unap.edu.pe" class="clink">✉️ cn.choque@est.unap.edu.pe</a>
+    <a href="https://www.unap.edu.pe" class="clink">🏛️ UNAP</a>
+  </div>
+</section>
+
+<footer>EST334 — Estadística Espacial · UNAP 2026-I · Clever Nelson Choque Zuñiga · 213854</footer>
+
+<script>
+  // ── Scroll reveal ──
+  const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('up'); }), {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── Partículas animadas en el hero ──
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  const hero = document.querySelector('.hero');
+
+  function resize() {
+    canvas.width  = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Crear partículas
+  const particles = Array.from({length: 70}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + .5,
+    dx: (Math.random() - .5) * .5,
+    dy: (Math.random() - .5) * .5,
+    o: Math.random() * .5 + .1,
+  }));
+
+  // Líneas entre partículas cercanas
+  function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(134,239,172,${(1 - dist/120) * 0.15})`;
+          ctx.lineWidth = .5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+      // Mover
+      p.x += p.dx;
+      p.y += p.dy;
+
+      // Rebotar en bordes
+      if (p.x < 0 || p.x > canvas.width)  p.dx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+      // Dibujar punto
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(134,239,172,${p.o})`;
+      ctx.fill();
+    });
+
+    drawLines();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</body>
+</html>
